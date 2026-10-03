@@ -3,6 +3,8 @@
 @section('title', 'All Books')
 
 @section('content')
+
+<a href="{{ route('books.create')}}" class="btn btn-primary mb-3">Add books</a>
     <p>
         Filter by category:
         <a href="{{ route('books.index', ['category' => 'Motivation', 'year' => $year]) }}">Motivation</a>

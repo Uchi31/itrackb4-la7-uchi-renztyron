@@ -1,10 +1,13 @@
-Q1
-Explain the order you placed your featured route and your detail route in, and what would happen if you swapped them.
-ANS: I placed the featured route before the detail route because /books/{id} can treat the word featured as an ID. If I swapped the order, the detail route would match /books/featured first, so the featured page would not work correctly.
-Q2
-What happens when someone visits an id that does not exist in your data, and what did you write to make that happen?
-ANS: When someone visits an ID that is not in my data, the page shows a 404 error instead of trying to display a missing book. I made this happen by checking isset($books[$id]) and using abort(404) when the ID does not exist.
-Q3
-Why do your links use route names instead of typed URLs? Give one concrete thing that would break if they did not.
-ANS: I use route names so my links are connected to the route instead of having the URL written directly in the Blade file. For example, if I change /books to /library, links using route('books.index') will still work, while a hard-coded /books link would lead to a 404.
+## Lab Activity 7
 
+Q1. Why does the form use POST instead of GET?
+
+The form uses POST because it is sending data to the server to create a new record. If GET was used, the data would appear in the URL and refreshing the page could repeat the request. POST is better for submitting information because the data is sent in the request body.
+
+Q2. What stops the save when validation fails?
+
+The $request->validate() method checks the submitted data before the save code runs. If a rule fails, Laravel automatically stops the controller method and redirects the visitor back to the form with the validation errors. This is why the record is not saved when the input is invalid.
+
+Q3. Why does the success message not appear on every page?
+
+The layout is displayed on every page, but the success message only exists in the session after a successful save. The message is read from the session and then removed after it is displayed. Because of this, it appears once and does not continue showing on other pages.

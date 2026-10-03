@@ -3,20 +3,28 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Symfony\Contracts\Service\Attribute\Required;
 
 class BookController extends Controller
 {
     private function getBooks()
-    {
-        return [
-            1 => ['id' => 1, 'title' => 'Think and Grow Rich', 'author' => 'Napoleon Hill', 'year' => 1937, 'category' => 'Motivation'],
-            2 => ['id' => 2, 'title' => 'The 7 Habits of Highly Effective People', 'author' => 'Stephen R. Covey', 'year' => 1989, 'category' => 'Self-Help'],
-            3 => ['id' => 3, 'title' => 'Atomic Habits', 'author' => 'James Clear', 'year' => 2018, 'category' => 'Self-Help'],
-            4 => ['id' => 4, 'title' => 'How to Win Friends and Influence People', 'author' => 'Dale Carnegie', 'year' => 1936, 'category' => 'Motivation'],
-            5 => ['id' => 5, 'title' => 'Mindset: The New Psychology of Success', 'author' => 'Carol S. Dweck', 'year' => 2006, 'category' => 'Psychology'],
-            6 => ['id' => 6, 'title' => 'The Power of Now', 'author' => 'Eckhart Tolle', 'year' => 1997, 'category' => 'Psychology'],
-        ];
+{
+    $path = storage_path('app/data/books.json');
+    $data = json_decode(file_get_contents($path), true);
+
+    $books = [];
+    foreach ($data as $book) {
+        $books[$book['id']] = $book;
     }
+
+    return $books;
+}
+
+private function saveBooks($books)
+{
+    $path = storage_path('app/data/books.json');
+    file_put_contents($path, json_encode(array_values($books), JSON_PRETTY_PRINT));
+}
 
     public function index(Request $request)
 {
@@ -49,14 +57,28 @@ class BookController extends Controller
 }
 
     public function create()
-    {
-        //
-    }
+{
+    return view('books.create');
+}
 
     public function store(Request $request)
-    {
-        //
-    }
+{
+    $validated = $request->validate([
+        'title' => 'required|max:255',
+        'author' => 'required|max:255',
+        'year' => 'required|numeric',
+        'category' => 'required|in:Motivation,Self-Help,Psychology',
+    ]);
+
+    $books = $this->getBooks();
+    $newId = count($books) ? max(array_keys($books)) + 1 : 1;
+    $validated['id'] = $newId;
+    $books[$newId] = $validated;
+
+    $this->saveBooks($books);
+
+    return redirect()->route('books.index')->with('success', 'Book added successfully.');
+}
 
     public function show(string $id)
     {

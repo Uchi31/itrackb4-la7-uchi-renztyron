@@ -14,4 +14,10 @@ Route::get('/books/filter/{value?}', function ($value = null) {
     return redirect()->route('books.index', ['category' => $value]);
 });
 
-Route::resource('books', BookController::class)->only(['index', 'show']);
+Route::get('/books/create', [BookController::class, 'create'])
+    ->name('books.create');
+
+Route::post('/books', [BookController::class, 'store'])
+    ->name('books.store');
+
+Route::resource('books', BookController::class)->only(['index', 'show', 'create', 'store']);

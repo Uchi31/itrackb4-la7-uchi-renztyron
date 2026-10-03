@@ -12,6 +12,10 @@
 
         @include('partials._nav')
 
+            @if (session('success'))
+        <p>{{ session('success') }}</p>
+    @endif
+
         @yield('content')
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
