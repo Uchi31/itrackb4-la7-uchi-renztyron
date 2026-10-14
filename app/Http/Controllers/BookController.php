@@ -3,82 +3,89 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Symfony\Contracts\Service\Attribute\Required;
 
 class BookController extends Controller
 {
     private function getBooks()
-{
-    $path = storage_path('app/data/books.json');
-    $data = json_decode(file_get_contents($path), true);
+    {
+        $path = storage_path('app/data/books.json');
+        $data = json_decode(file_get_contents($path), true);
 
-    $books = [];
-    foreach ($data as $book) {
-        $books[$book['id']] = $book;
+        $books = [];
+        foreach ($data as $book) {
+            $books[$book['id']] = $book;
+        }
+
+        return $books;
     }
 
-    return $books;
-}
-
-private function saveBooks($books)
-{
-    $path = storage_path('app/data/books.json');
-    file_put_contents($path, json_encode(array_values($books), JSON_PRETTY_PRINT));
-}
+    private function saveBooks($books)
+    {
+        $path = storage_path('app/data/books.json');
+        file_put_contents($path, json_encode(array_values($books), JSON_PRETTY_PRINT));
+    }
 
     public function index(Request $request)
-{
-    $books = $this->getBooks();
+    {
+        $books = $this->getBooks();
 
-    $category = $request->query('category', '');
-    $year = $request->query('year', '');
+        $category = $request->query('category', '');
+        $year = $request->query('year', '');
 
-    if ($category !== '') {
-        foreach ($books as $key => $book) {
-            if ($book['category'] !== $category) {
-                unset($books[$key]);
+        if ($category !== '') {
+            foreach ($books as $key => $book) {
+                if ($book['category'] !== $category) {
+                    unset($books[$key]);
+                }
             }
         }
-    }
 
-    if ($year !== '') {
-        foreach ($books as $key => $book) {
-            if ($book['year'] != $year) {
-                unset($books[$key]);
+        if ($year !== '') {
+            foreach ($books as $key => $book) {
+                if ($book['year'] != $year) {
+                    unset($books[$key]);
+                }
             }
         }
-    }
 
-    return view('books.index', [
-        'books' => $books,
-        'category' => $category,
-        'year' => $year,
-    ]);
-}
+        return view('books.index', [
+            'books' => $books,
+            'category' => $category,
+            'year' => $year,
+        ]);
+    }
 
     public function create()
-{
-    return view('books.create');
-}
+    {
+        return view('books.create');
+    }
 
     public function store(Request $request)
-{
-    $validated = $request->validate([
-        'title' => 'required|max:255',
-        'author' => 'required|max:255',
-        'year' => 'required|numeric',
-        'category' => 'required|in:Motivation,Self-Help,Psychology',
-    ]);
+    {
+        $validated = $request->validate([
+            'title' => 'required|max:255',
+            'author' => 'required|max:255',
+            'year' => 'required|numeric|min:1000|max:2026',
+            'category' => 'required|in:Motivation,Self-Help,Psychology',
+        ]);
 
-    $books = $this->getBooks();
-    $newId = count($books) ? max(array_keys($books)) + 1 : 1;
-    $validated['id'] = $newId;
-    $books[$newId] = $validated;
+        $books = $this->getBooks();
 
-    $this->saveBooks($books);
+        $newId = empty($books) ? 1 : max(array_keys($books)) + 1;
 
-    return redirect()->route('books.index')->with('success', 'Book added successfully.');
-}
+        $books[$newId] = [
+            'id' => $newId,
+            'title' => $validated['title'],
+            'author' => $validated['author'],
+            'year' => (int) $validated['year'],
+            'category' => $validated['category'],
+        ];
+
+        $this->saveBooks($books);
+
+        return redirect()->route('books.index')
+            ->with('success', 'Book added successfully!');
+    }
 
     public function show(string $id)
     {
@@ -113,6 +120,4 @@ private function saveBooks($books)
 
         return view('books.show', ['book' => $featured]);
     }
-
-    
 }

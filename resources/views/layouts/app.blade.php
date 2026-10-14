@@ -12,9 +12,9 @@
 
         @include('partials._nav')
 
-            @if (session('success'))
-        <p>{{ session('success') }}</p>
-    @endif
+        @if (session('success'))
+            <p>{{ session('success') }}</p>
+        @endif
 
         @yield('content')
     </div>

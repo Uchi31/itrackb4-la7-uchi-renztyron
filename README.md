@@ -1,13 +1,14 @@
 ## Lab Activity 7
 
-Q1. Why does the form use POST instead of GET?
+Q1
+Your form sends data with POST rather than GET. Explain what would go wrong if it used GET instead. Your answer should say something about what a browser does when a page is refreshed.
+-> If I used GET, my books details would show in the URL, and refreshing would make the browser send the same request again, so the book could be saved twice. With POST, the data stays out of the URL and the browser warns me before resending it.
 
-The form uses POST because it is sending data to the server to create a new record. If GET was used, the data would appear in the URL and refreshing the page could repeat the request. POST is better for submitting information because the data is sent in the request body.
+Q2
+When validation fails, your controller does not run the code that saves the record — and you did not write an if statement to stop it. Explain what actually stops it, and where the visitor ends up.
+-> $request->validate() stops it. When I submitted the form empty, a rule failed, so the method stopped there and the saving code never ran, which is why nothing was added to books.json. I ended up back on /books/create with the errors beside the fields and my typed input still there.
 
-Q2. What stops the save when validation fails?
+Q3
+Your success message is displayed from the layout, which renders on every page. Explain why it does not appear on every page.
+-> The layout checks for the success message on every page, but ->with('success', ...) keeps it for only one request. After saving, it showed once on /books, and when I clicked another page it was already gone.
 
-The $request->validate() method checks the submitted data before the save code runs. If a rule fails, Laravel automatically stops the controller method and redirects the visitor back to the form with the validation errors. This is why the record is not saved when the input is invalid.
-
-Q3. Why does the success message not appear on every page?
-
-The layout is displayed on every page, but the success message only exists in the session after a successful save. The message is read from the session and then removed after it is displayed. Because of this, it appears once and does not continue showing on other pages.

@@ -20,4 +20,4 @@ Route::get('/books/create', [BookController::class, 'create'])
 Route::post('/books', [BookController::class, 'store'])
     ->name('books.store');
 
-Route::resource('books', BookController::class)->only(['index', 'show', 'create', 'store']);
+Route::resource('books', BookController::class)->only(['index', 'show']);
