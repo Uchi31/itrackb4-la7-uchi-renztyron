@@ -12,3 +12,4 @@ Q3
 Your success message is displayed from the layout, which renders on every page. Explain why it does not appear on every page.
 -> The layout checks for the success message on every page, but ->with('success', ...) keeps it for only one request. After saving, it showed once on /books, and when I clicked another page it was already gone.
 
+
